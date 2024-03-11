@@ -1,4 +1,3 @@
 @import url('https://thesandfox.github.io/css/index.css');
-body {
-	background-color: var(--color-light);
-}
+@import url('./reset.css');
+@import url('./slotMachine.css');

@@ -1,0 +1,8 @@
+:root {
+	--color-lightest: rgb(252,255,214);
+	--color-light: rgb(228,208,163);
+	--color-dark: rgb(90,73,55);
+	--color-light-gray: #999;
+	--color-gray: #464546;
+	--color-dark-gray: rgb(33,33,33);
+}

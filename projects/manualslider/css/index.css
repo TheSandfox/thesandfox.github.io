@@ -1,5 +1,4 @@
-@import url('https://thesandfox.github.io/mycolor.css');
-@import url('https://thesandfox.github.io/font.css');
+@import url('https://thesandfox.github.io/css/index.css');
 body {
 	background-color: var(--color-light);
 }

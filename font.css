@@ -1,0 +1,16 @@
+@font-face {
+	font-family: 'DNFBitBitv2'; /* 폰트 이름 설정 */
+	src: url('DNFBitBitv2.ttf') format('truetype'); /* 폰트 파일 경로 설정 */
+}
+@font-face {
+	font-family: 'W2002'; /* 폰트 이름 설정 */
+	src: url('2002.ttf') format('truetype'); /* 폰트 파일 경로 설정 */
+}
+
+.fontBitBit{
+	font-family: 'DNFBitBitv2', sans-serif;
+}
+
+.fontW3 {
+	font-family: 'W2002', sans-serif;
+}

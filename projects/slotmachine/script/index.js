@@ -1,14 +1,32 @@
-let displays = [
-	new SlotmachineDisplay('.slotmachine-display:first-child'), 
-	new SlotmachineDisplay('.slotmachine-display:nth-child(2)'), 
-	new SlotmachineDisplay('.slotmachine-display:nth-child(3)')
-];
+window.addEventListener('contextmenu',(event)=>{event.preventDefault();});
 
-let slotmachine = new Slotmachine(displays);
-displays[2].addItem("앤드류");
-displays[2].addItem("스즈키");
-displays[2].addItem("슐레이만");
-displays[2].addItem("앗딘");
-displays[2].addItem("블랑카");
-displays[2].addItem("유리");
-slotmachine.pull();
+let slotmachine = new Slotmachine('.slotmachine.first','랜덤 작명기');
+slotmachine.addDisplay();
+slotmachine.addDisplay();
+slotmachine.addDisplay();
+slotmachine.addDisplayItem(0,"심각한");
+slotmachine.addDisplayItem(0,"유쾌한");
+slotmachine.addDisplayItem(0,"경박한");
+slotmachine.addDisplayItem(0,"진지한");
+slotmachine.addDisplayItem(0,"신중한");
+slotmachine.addDisplayItem(0,"화려한");
+slotmachine.addDisplayItem(0,"신속한");
+slotmachine.addDisplayItem(0,"강력한");
+slotmachine.addDisplayItem(0,"냉혹한");
+slotmachine.addDisplayItem(1,"치유술사");
+slotmachine.addDisplayItem(1,"아이돌");
+slotmachine.addDisplayItem(1,"너구리");
+slotmachine.addDisplayItem(1,"엔지니어");
+slotmachine.addDisplayItem(1,"팝가수");
+slotmachine.addDisplayItem(1,"가설병");
+slotmachine.addDisplayItem(2,"찰스");
+slotmachine.addDisplayItem(2,"앨빈");
+slotmachine.addDisplayItem(2,"데이브");
+slotmachine.addDisplayItem(2,"크리스");
+slotmachine.addDisplayItem(2,"앤드류");
+slotmachine.addDisplayItem(2,"스즈키");
+slotmachine.addDisplayItem(2,"슐레이만");
+slotmachine.addDisplayItem(2,"앗딘");
+slotmachine.addDisplayItem(2,"블랑카");
+slotmachine.addDisplayItem(2,"유리");
+slotmachine.setRandomProgress();

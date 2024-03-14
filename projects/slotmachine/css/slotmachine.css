@@ -1,3 +1,8 @@
+.slotmachine-display-wrapper {
+	&.hidden {
+		display:none;
+	}
+}
 .slotmachine-display {
 	overflow: hidden;
 	position: relative;
@@ -11,7 +16,6 @@
 		}
 	}
 }
-
 /* custom properties */
 .slotmachine {
 	font-size: 32px;
@@ -22,7 +26,11 @@
 	flex-direction: column;
 	gap: 32px;
 	align-items: center;
+	&>h1 {
+		user-select: none;
+	}
 }
+
 .slotmachine-display-container {
 	width: 100%;
 	display: flex;
@@ -46,50 +54,131 @@
 		}
 	}
 }
-.slotmachine-button {
-	width: 96px;
-	height: 64px;
-	position: relative;
-	padding: 4px;
-	overflow: visible;
-	&>.dotbox {
-		pointer-events: none;
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		left: 0;
-	}
-	&>.plastic {
-		pointer-events: none;
-		width: calc(100% - 8px);
-		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
-		z-index:1;
-		position: absolute;
-		left:4px;
-		bottom:4px;
+.slotmachine-button-container{
+	display: flex;
+	gap: 16px;
+	& .slotmachine-button {
+		user-select: none;
+		width: 80px;
+		height: 64px;
+		position: relative;
+		padding: 4px;
+		overflow: visible;
+		font-size: 24px;
 		color: var(--color-dark-gray);
-		&>.top {
-			width: 100%;
-			height:64px;
-			background-color: var(--color-light-gray);
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			border: 4px solid var(--color-dark-gray);
+		&.pressed>.plastic>.bottom {
+			display: none;
 		}
-		&>.bottom {
+		&>.dotbox {
+			pointer-events: none;
+			position: absolute;
 			width: 100%;
-			height: 8px;
-			background-color: var(--color-gray);
-			border-style: solid; 
-			border-color: var(--color-dark-gray);
-			border-width: 0 4px 4px 4px;
-			&.hidden {
-				display: none;
+			height: 100%;
+			top: 0;
+			left: 0;
+		}
+		&>.plastic {
+			pointer-events: none;
+			width: calc(100% - 8px);
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+			z-index:1;
+			position: absolute;
+			left:4px;
+			bottom:4px;
+			&>.top {
+				width: 100%;
+				height:64px;
+				background-color: var(--color-light-gray);
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				border: 4px solid var(--color-dark-gray);
+			}
+			&>.bottom {
+				width: 100%;
+				height: 8px;
+				background-color: var(--color-gray);
+				border-style: solid; 
+				border-color: var(--color-dark-gray);
+				border-width: 0 4px 4px 4px;
+			}
+		}
+		&.quick {
+			--color-temp: #4e1d00;
+			color: var(--color-temp);
+			& .top {
+				background-color: #ffd000;
+				border-color: var(--color-temp);
+			}
+			& .bottom {
+				background-color: #a08300;
+				border-color: var(--color-temp);
+			}
+		}
+		&.plus {
+			--color-temp: #0d4100;
+			color: var(--color-temp);
+			& .top {
+				background-color: #00df38;
+				border-color: var(--color-temp);
+			}
+			& .bottom {
+				background-color: #00a000;
+				border-color: var(--color-temp);
+			}
+		}
+		&.minus {
+			--color-temp: #411800;
+			color: var(--color-temp);
+			& .top {
+				background-color: #ad3b1f;
+				border-color: var(--color-temp);
+			}
+			& .bottom {
+				background-color: #883c0a;
+				border-color: var(--color-temp);
 			}
 		}
 	}
+}
+.slotmachine-result-display {
+	width: 100%;
+	height: 64px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 16px;
+	color: var(--color-gray);
+	opacity: 0.4;
+	transform-origin: 50% 80%;
+	font-size: 40px;
+	transition: 0.15s;
+	user-select: none;
+	&>.copy {
+		display: none;
+		transition: 0.15s;
+		cursor: pointer;
+		&:hover {
+			transform:scale(1.1);
+		}
+	}
+	&.active {
+		user-select: initial;
+		color: inherit;
+		opacity: 1;
+		animation-name: slotmachine-anim1;
+		animation-duration: 0.15s;
+		&>.copy {
+			display: flex;
+		}
+	}
+}
+
+/* result디스플레이 스케일링 */
+@keyframes slotmachine-anim1 {
+	0% {transform:scale(1.0);}
+	50% {transform:scale(1.25);}
+	100% {transform:scale(1.0);}
 }

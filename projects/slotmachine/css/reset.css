@@ -6,6 +6,12 @@ h1 {
 	font-weight: normal;
 }
 
+i {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .fontBitBit {
 	color: var(--color-dark);
 	font-smooth: never;

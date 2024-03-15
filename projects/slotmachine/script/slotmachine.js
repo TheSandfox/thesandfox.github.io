@@ -1,70 +1,165 @@
 class SlotmachineDisplay {
 	static TIMER_TICK = 0.025;
 	static THIS = [];
-	static DISPLAYS = [];
 	static CURRENT_SELECTED = null;
+	static CURRENT_SELECTED_BUTTON = null;
 	static get(htmlelement) {
-		return SlotmachineDisplay.THIS[SlotmachineDisplay.DISPLAYS.indexOf(htmlelement)];
+		return SlotmachineDisplay.THIS[htmlelement.dataset.index];
 	}
 	// instance에서 호출, 선택한 슬롯을 현재 선택중인 슬롯에 할당
-	static mouseDownCallback(event) {
-		if(event.button==2){
-			let slotInstance = SlotmachineDisplay.get(this);
-			slotInstance.pull();
-			return;
-		} else if (event.button!=0) {
-			return;
+	static mouseDownCallback(event,id) {
+		switch (id) {
+		//그냥 다운
+		case 0: 
+			if(event.button==2){
+				let instace = SlotmachineDisplay.get(event.target);
+				instace.pull();
+				return;
+			} else if (event.button!=0) {
+				return;
+			}
+			let instace = SlotmachineDisplay.get(event.target);
+			SlotmachineDisplay.CURRENT_SELECTED = instace;
+			instace.setSleep(false);
+			instace.suspend();
+			break;
+		//버튼 클릭
+		case 1:
+			SlotmachineDisplay.CURRENT_SELECTED_BUTTON = event.target;
+			break;
+		//더블 클릭
+		case 2:
+			let instance = SlotmachineDisplay.get(event.target);
+			instance.machine.editModeRequest(instance);
+			break;
+		default :
 		}
-		let slotInstance = SlotmachineDisplay.get(this);
-		SlotmachineDisplay.CURRENT_SELECTED = slotInstance;
-		slotInstance.setSleep(false);
-		slotInstance.suspend();
 	}
 	// window에서 호출, 현재 선택중인 슬롯을 move
 	static moveCallback(event) {
 		if(SlotmachineDisplay.CURRENT_SELECTED == null){return;}
+		event.preventDefault();
 		let slotInstance = SlotmachineDisplay.CURRENT_SELECTED;
 		slotInstance.moveWithGwansung(-(event.movementY)/slotInstance.getHeight());
 	}
 	// window에서 호출, 버튼 뗐을 때 현재 선택중인 슬롯을 비움
-	static mouseUpCallback() {
+	static mouseUpCallback(event) {
+		if(SlotmachineDisplay.CURRENT_SELECTED_BUTTON!=null&&
+			SlotmachineDisplay.CURRENT_SELECTED_BUTTON==event.target
+		){
+			let element = SlotmachineDisplay.CURRENT_SELECTED_BUTTON;
+			let instance = SlotmachineDisplay.get(element);
+			switch (element.dataset.buttonName) {
+			//편집창 열기
+			case 'edit' :
+				instance.machine.editModeRequest(instance);
+				break;
+			//편집-저장
+			case 'editSave':
+				instance.saveString(instance.editBoxInput.value);
+				break;
+			//편집-내용비우기
+			case 'editDelete':
+				instance.editBoxInput.innerHTML = '';
+				instance.editBoxInput.value = '';
+				break;
+			//편집-닫기
+			case 'editClose':
+				instance.setEditMode(false);
+				break;
+			default :
+			}
+		}
 		SlotmachineDisplay.CURRENT_SELECTED = null;
+		SlotmachineDisplay.CURRENT_SELECTED_BUTTON = null;
 	}
 	constructor(slotmachineInstance,defaultContent) {
+		this.index = SlotmachineDisplay.THIS.push(this)-1;
 		this.machine = slotmachineInstance;
 		this.container = document.createElement('div');
 		this.container.classList.add('slotmachine-display-wrapper');
 		this.container.classList.add('dotbox');
 		this.display = document.createElement('div');
 		this.display.classList.add('slotmachine-display');
+		this.display.dataset.index = this.index;
 		this.slot_container = document.createElement('div');
 		this.slot_container.classList.add('slot-container');
 		this.slots = this.slot_container.children;
-		this.hidden = false;
 		//append
 		this.container.appendChild(this.display);
-		this.display.appendChild(this.slot_container);
+		this.initEditBox();
 		//property
 		this.progress = 0.0;
 		this.autoProgress = 0.0;
 		this.gwansung = 0.0;
 		this.yVector = [0.0,0.0,0.0,0.0,0.0];
 		this.carculatePosition();
-		this.display.addEventListener('mousedown',SlotmachineDisplay.mouseDownCallback);
+		this.display.addEventListener('mousedown',(event)=>{SlotmachineDisplay.mouseDownCallback(event,0)});
+		this.display.addEventListener('dblclick',(event)=>{SlotmachineDisplay.mouseDownCallback(event,2)});
 		this.machal = 1.75;
 		this.timer = setInterval(()=>{
 			this.timerAction();
 		},25);
+		this.hidden = false;
+		this.editMode = false;
 		// this.setSleep(true);
 		this.sleep = true;
 		//import
-		if(defaultContent!==undefined){
-			console.log("얍")
+		if(localStorage.getItem(Slotmachine.LOCAL_ITEM_PREFIX_CONTENT+this.index)) {
+			this.saveString(localStorage.getItem(Slotmachine.LOCAL_ITEM_PREFIX_CONTENT+this.index));
+		} else if(defaultContent!==undefined){
 			this.importItems(defaultContent);
 		}
-		//push
-		SlotmachineDisplay.THIS.push(this);
-		SlotmachineDisplay.DISPLAYS.push(this.display);
+	}
+	initEditBox() {
+		//슬롯 옆 편집버튼
+		this.buttonEdit = document.createElement('div');
+		this.buttonEdit.classList.add('button-edit');
+		this.buttonEdit.dataset.index = this.index;
+		this.buttonEdit.dataset.buttonName = 'edit';
+		this.buttonEdit.innerHTML = '<i class="fi fi-rr-pencil"></i>';
+		//박스 래퍼
+		this.editBoxWrapper = document.createElement('div');
+		this.editBoxWrapper.classList.add('slotmachine-display-editbox-wrapper');
+		this.editBoxWrapper.classList.add('dotbox');
+		this.editBoxInput = document.createElement('textarea');
+		this.editBoxInput.classList.add('slotmachine-display-editbox');
+		this.editBoxInput.placeholder = '쉼표(,)사용으로 여러 단어 입력'
+		//버튼컨테이너
+		let editBoxButtonContainer = document.createElement('div');
+		editBoxButtonContainer.className = ('slotmachine-display-editbox-button-container');
+		//세이브
+		this.editBoxButtonSave = document.createElement('div');
+		this.editBoxButtonSave.className = 'slotmachine-display-editbox-button save';
+		this.editBoxButtonSave.dataset.index = this.index;
+		this.editBoxButtonSave.dataset.buttonName = 'editSave';
+		this.editBoxButtonSave.innerHTML = '<i class="fi fi-rs-disk"></i>';
+		//내용물비우기
+		this.editBoxButtonDelete = document.createElement('div');
+		this.editBoxButtonDelete.className = 'slotmachine-display-editbox-button delete';
+		this.editBoxButtonDelete.dataset.index = this.index;
+		this.editBoxButtonDelete.dataset.buttonName = 'editDelete';
+		this.editBoxButtonDelete.innerHTML = '<i class="fi fi-rs-trash"></i>';
+		//닫기
+		this.editBoxButtonClose = document.createElement('div');
+		this.editBoxButtonClose.className = 'slotmachine-display-editbox-button close';
+		this.editBoxButtonClose.dataset.index = this.index;
+		this.editBoxButtonClose.dataset.buttonName = 'editClose';
+		this.editBoxButtonClose.innerHTML = '<i class="fi fi-sr-cross-small"></i>';
+		//append
+		this.container.appendChild(this.buttonEdit);
+		this.container.appendChild(this.editBoxWrapper);
+		this.display.appendChild(this.slot_container);
+		this.editBoxWrapper.appendChild(this.editBoxInput);
+		this.editBoxWrapper.appendChild(editBoxButtonContainer);
+		editBoxButtonContainer.appendChild(this.editBoxButtonSave);
+		editBoxButtonContainer.appendChild(this.editBoxButtonDelete);
+		editBoxButtonContainer.appendChild(this.editBoxButtonClose);
+		//events
+		this.buttonEdit.addEventListener('mousedown',(event)=>{SlotmachineDisplay.mouseDownCallback(event,1)});
+		this.editBoxButtonSave.addEventListener('mousedown',(event)=>{SlotmachineDisplay.mouseDownCallback(event,1)});
+		this.editBoxButtonDelete.addEventListener('mousedown',(event)=>{SlotmachineDisplay.mouseDownCallback(event,1)});
+		this.editBoxButtonClose.addEventListener('mousedown',(event)=>{SlotmachineDisplay.mouseDownCallback(event,1)});
 	}
 	timerAction() {
 		if(this.sleep||this.hidden){return;}
@@ -105,7 +200,7 @@ class SlotmachineDisplay {
 	}
 	addItem(val,classes) {
 		let newSlot = document.createElement('div');
-		newSlot.innerHTML = val;
+		newSlot.innerHTML = val.trim();
 		newSlot.classList.add('slot');
 		if (classes!=undefined) {
 			classes.forEach((val)=>{
@@ -115,15 +210,28 @@ class SlotmachineDisplay {
 		this.slot_container.appendChild(newSlot);
 		this.setRandomProgress();
 	}
-	clearItem() {
-		while (this.slot_container.firstChild) {
-			this.slot_container.removeChild(myNode.lastChild);
-		}
+	clearItems() {
+		this.slot_container.innerHTML = '';
 	}
 	importItems(stringArr) {
+		if (!stringArr) {return;}
 		stringArr.forEach((val)=>{
 			this.addItem(val);
 		});
+	}
+	exportString() {
+		let s = [];
+		for(let i = 0;i<this.slots.length;i++){
+			s.push(this.slots[i].innerHTML);
+		}
+		return s.join(',');
+	}
+	saveString(val) {
+		this.clearItems();
+		this.importItems(val.split(','));
+		this.suspend();
+		this.setSleep(true);
+		localStorage.setItem(Slotmachine.LOCAL_ITEM_PREFIX_CONTENT+String(this.index),val);
 	}
 	clampProgress() {
 		//프로그레스 클램핑
@@ -223,12 +331,26 @@ class SlotmachineDisplay {
 		this.gwansung = yval;
 		this.setSleep(false);
 	}
+	// 편집모드 온오프
+	setEditMode(flag) {
+		if (flag) {
+			this.buttonEdit.classList.add('active');
+			this.editBoxWrapper.classList.add('active');
+			this.editBoxInput.value = this.exportString();
+			this.editBoxInput.innerHTML = this.editBoxInput.value;
+		} else {
+			this.editBoxWrapper.classList.remove('active');
+			this.buttonEdit.classList.remove('active');
+		}
+	}
 }
 
 class Slotmachine {
 	static THIS = [];
 	static CURRENT_SELECTED_BUTTON = null;
-	static LOCAL_ITEM_PREFIX = 'slotmachine-content';
+	static LOCAL_ITEM_PREFIX_CONTENT = 'slotmachine-content';
+	static LOCAL_ITEM_PREFIX_COUNT = 'slotmachine-display-count';
+	static DISPLAY_COUNT_MAX = 4;
 	static get(buttonElement){
 		return Slotmachine.THIS[buttonElement.dataset.index];
 	}
@@ -304,11 +426,10 @@ class Slotmachine {
 		this.initDisplayContainer();
 		this.initButtons();
 		this.initResultDisplay();
-		this.displayCount = 0;
 		return this;
 	}
-	addDisplay(defaultContent) {
-		let display = new SlotmachineDisplay(this,defaultContent);
+	addDisplay() {
+		let display = new SlotmachineDisplay(this);
 		this.display_container.appendChild(display.container);
 		this.displays.push(display);
 		this.displayCount += 1;
@@ -396,6 +517,12 @@ class Slotmachine {
 		copyButton.dataset.index=this.index;
 		copyButton.dataset.buttonName='copy';
 		copyButton.addEventListener('mousedown',(event)=>{Slotmachine.mouseDownCallback(event);});
+		//default count
+		if(localStorage.getItem(Slotmachine.LOCAL_ITEM_PREFIX_COUNT)){
+			this.setDisplayCount(parseInt(localStorage.getItem(Slotmachine.LOCAL_ITEM_PREFIX_COUNT)));
+		} else {
+			this.setDisplayCount(3);
+		}
 	}
 	suspend() {
 		for(let i = 0; i<this.displays.length; i++) {
@@ -405,7 +532,7 @@ class Slotmachine {
 	sleepRequest() {
 		let s = '';
 		for(let i = 0; i<this.displays.length; i++) {
-			if ((!this.displays[i].sleep)&&(!this.displays[i].hidden)){return;}
+			if ((!this.displays[i].sleep)&&(!this.displays[i].hidden)&&(this.displays[i].slots.length>1)){return;}
 		}
 		for(let i = 0; i<this.displays.length; i++) {
 			if (this.displays[i].hidden||this.displays[i].slots.length<=0) {continue;}
@@ -424,9 +551,10 @@ class Slotmachine {
 	setDisplayCount(val) {
 		let c = val;
 		if(c<=0) {return;};
+		if(c>Slotmachine.DISPLAY_COUNT_MAX) {c=Slotmachine.DISPLAY_COUNT_MAX};
 		if (c>this.displays.length) {
 			for(let i=this.displays.length;i<c;i++) {
-				this.addDisplay(["-"]);
+				this.addDisplay();
 			}
 		}
 		this.displayCount = c;
@@ -437,15 +565,24 @@ class Slotmachine {
 				this.displays[i].hide(true);
 			}
 		}
-		this.sleepRequest();
+		this.resultDisplay.children[0].innerText = '';
+		this.awake();
+		localStorage.setItem(Slotmachine.LOCAL_ITEM_PREFIX_COUNT,c);
 	}
 	importItems(index,val) {
 		if(index<0||index>=this.displays.length){return;}
 		this.displays[index].importItems(val);
 	}
+	editModeRequest(displayInstance) {
+		let flag = displayInstance?displayInstance.buttonEdit.classList.contains('active'):true;
+		for(let i = 0;i<this.displays.length;i++) {
+			this.displays[i].setEditMode(false);
+		}
+		if(!flag){displayInstance.setEditMode(true);}
+	}
 }
 
 // essencial configuration
 window.addEventListener('mousemove',SlotmachineDisplay.moveCallback);
-window.addEventListener('mouseup',SlotmachineDisplay.mouseUpCallback);
+window.addEventListener('mouseup',(event)=>{SlotmachineDisplay.mouseUpCallback(event);});
 window.addEventListener('mouseup',(event)=>{Slotmachine.mouseUpCallback(event);});

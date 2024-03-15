@@ -19,7 +19,8 @@
 /* custom properties */
 .slotmachine {
 	font-size: 32px;
-	width: 640px;
+	width: 100%;
+	margin: auto auto;
 	/* height: 320px; */
 	color: var(--color-dark);
 	display: flex;
@@ -33,10 +34,12 @@
 
 .slotmachine-display-container {
 	width: 100%;
+	height: 360px;
 	display: flex;
 	flex-direction: column;
 	gap: 32px;
 	align-items: center;
+	position: relative;
 	& .slotmachine-display {
 		width: 320px;
 		height: 64px;
@@ -53,11 +56,81 @@
 			}
 		}
 	}
+	&>.slotmachine-display-wrapper{
+		& .button-edit {
+			width: 32px;
+			height: 32px;
+			right: -36px;
+			top: 0;
+			position: absolute;
+			display: flex;
+			/* display: none; */
+			justify-content: center;
+			align-items: center;
+			font-size: 16px;
+			text-shadow: 2px 2px #0003;
+			cursor: pointer;
+			opacity: 0.5;
+			transition: 0.15s;
+			transform-origin: 50% 50%;
+			&:hover {
+				opacity: 1;
+			}
+			&.active{
+				opacity: 1;
+				transform: scale(1.1);
+				color: white;
+			}
+			& * {
+				pointer-events: none;
+			}
+		}
+	}
+}
+.slotmachine-display-editbox-wrapper {
+	width: 320px;
+	height: 320px;
+	display: none;
+	/* padding: 16px; */
+	position: fixed;
+	right: 16px;
+	top:16px;
+	&.active {
+		display:flex;
+	}
+	&>.slotmachine-display-editbox {
+		width:100%;
+		height:100%;
+		padding: 16px;
+		font-size: 16px;
+		font-family: 'Malgun Gothic','sans-serif';
+		border: none;
+		outline: none;
+	}
+	&>.slotmachine-display-editbox-button-container {
+		position: absolute;
+		display: flex;
+		right: 16px;
+		bottom: 16px;
+		justify-content: flex-end;
+		align-items: center;
+		gap: 8px;
+		&>.slotmachine-display-editbox-button {
+			width: 24px;
+			height: 24px;
+			cursor: pointer;
+			font-size: 24px;
+			/* &.close {
+				color: #ff3300;
+			} */
+		}
+	}
 }
 .slotmachine-button-container{
 	display: flex;
 	gap: 16px;
 	& .slotmachine-button {
+		cursor: pointer;
 		user-select: none;
 		width: 80px;
 		height: 64px;
@@ -66,8 +139,13 @@
 		overflow: visible;
 		font-size: 24px;
 		color: var(--color-dark-gray);
-		&.pressed>.plastic>.bottom {
-			display: none;
+		&.pressed>.plastic {
+			&>.top {
+				filter: brightness(1.2);
+			}
+			&>.bottom{
+				display: none;
+			}
 		}
 		&>.dotbox {
 			pointer-events: none;
@@ -144,11 +222,11 @@
 	}
 }
 .slotmachine-result-display {
-	width: 100%;
-	height: 64px;
+	width: 320px;
+	/* height: 64px; */
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	align-items: flex-start;
 	gap: 16px;
 	color: var(--color-gray);
 	opacity: 0.4;
@@ -156,12 +234,18 @@
 	font-size: 40px;
 	transition: 0.15s;
 	user-select: none;
+	position: relative;
 	&>.copy {
+		position: absolute;
+		top: 8px;
+		right:-32px;
+		/* transform: translateY(-50%); */
 		display: none;
 		transition: 0.15s;
 		cursor: pointer;
+		pointer-events:initial;
 		&:hover {
-			transform:scale(1.1);
+			scale:1.1;
 		}
 	}
 	&.active {

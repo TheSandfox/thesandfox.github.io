@@ -42,14 +42,11 @@ let defaultItems = [
 	]
 ];
 
-// localStorage.setItem(Slotmachine.LOCAL_ITEM_PREFIX+'0','aaa,bbb,ccc');
+// localStorage.setItem(Slotmachine.LOCAL_ITEM_PREFIX_CONTENT+'0','aaa,bbb,ccc');
 
-let slotmachine = new Slotmachine('.slotmachine.first','랜덤 작명기');
-slotmachine.addDisplay();
-slotmachine.addDisplay();
-slotmachine.addDisplay();
-for(let i=0;i<slotmachine.displays.length;i++){
-	let localItem = localStorage.getItem(Slotmachine.LOCAL_ITEM_PREFIX+String(i));
-	slotmachine.importItems(i,localItem?localItem.split(','):defaultItems[i]);
-}
+let slotmachine = new Slotmachine('.slotmachine.first','다용도 룰렛');
+// for(let i=0;i<slotmachine.displays.length;i++){
+// 	let localItem = localStorage.getItem(Slotmachine.LOCAL_ITEM_PREFIX_CONTENT+String(i));
+// 	slotmachine.importItems(i,localItem?localItem.split(','):defaultItems[i]);
+// }
 slotmachine.setRandomProgress();

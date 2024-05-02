@@ -7,8 +7,17 @@
 	src: url('2002.ttf') format('truetype'); /* 폰트 파일 경로 설정 */
 }
 
+@font-face {
+	font-family: 'DungGeunMo';
+	src: url('DungGeunMo.ttf') format('truetype');
+}
+
 .fontBitBit{
 	font-family: 'DNFBitBitv2', sans-serif;
+}
+
+.fontRadialMo{
+	font-family: 'DungGeunMo', sans-serif;
 }
 
 .fontW3 {

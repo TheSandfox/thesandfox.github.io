@@ -13,3 +13,7 @@
 		filter: drop-shadow(4px 4px 0 #0003);
 	}
 }
+
+.genericShadow {
+	filter: drop-shadow(4px 4px 0 #0003);
+}

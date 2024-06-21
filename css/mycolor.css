@@ -3,8 +3,12 @@
 	--color-light: #e4d0a3;
 	--color-sub: #fff4e2;
 	--color-dark: #5a4937;
+	--color-gray1: #999999;
+	--color-gray2: #464546;
+	--color-gray3: #212121;
+	--color-white: #eeeeee;
+	/*deprecated*/
 	--color-light-gray: #999999;
 	--color-gray: #464546;
 	--color-dark-gray: #212121;
-	--color-white: #eeeeee;
 }

@@ -7,6 +7,9 @@
 	--color-gray2: #464546;
 	--color-gray3: #212121;
 	--color-white: #eeeeee;
+	--color-scrollbar-background: #686046;
+	--color-scrollbar-bar: #FFDD6F;
+	--color-scrollbar-hover: #fff1c3;
 	/*deprecated*/
 	--color-light: #e4d0a3;
 	--color-light-gray: #999999;
